@@ -25,7 +25,7 @@ FLANC_FIN = 34.5          # limite ventro-dorsale de la portion plane du flanc
 SOMMET = 53.0             # sommet dorsal, hors saillie des boutons
 RAYON_VENTRAL = 1.0       # arete ventrale du biseau, rayon tres serre
 RAYON_DORSAL = 2.0        # arete dorsale du biseau, rayon leger
-EXPOSANT_OGIVE = 1.75     # < 2 rend l'ogive plus pointue qu'une ellipse
+EXPOSANT_OGIVE = 3.0      # ogive aplatie, retenue par l'utilisateur en P13
 PAS_OGIVE = 24            # segments sur le quart d'ogive
 PAS_CONGE = 6             # segments par arete arrondie
 
