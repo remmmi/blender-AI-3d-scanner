@@ -31,12 +31,16 @@ MM = _geom.MM
 
 # --- parametres -------------------------------------------------------------
 
-COUDE_CAUDAL = 24.0        # hauteur du coude caudal du chevron
-COUDE_CRANIAL = 78.0       # hauteur du coude cranial
-BANDE_LARGEUR = 8.5        # largeur de la bande longitudinale, en curviligne
-CEINTURE_DEMI = 4.25       # demi-largeur des ceintures
-CEINTURE_CAUDALE_DORSALE = 14.0   # hauteur de la ceinture caudale au sommet dorsal
-CEINTURE_CRANIALE_DORSALE = 88.0  # hauteur de la ceinture craniale au sommet dorsal
+# Valeurs revisees en P15 apres confrontation aux planches p01, p03 et p04.
+# La premiere passe donnait une piece creme de 8.5 mm, soit moins de la moitie de
+# sa largeur reelle, et faisait mourir le creme sur l'arete craniale alors que
+# l'objet interpose toujours une bande de peinture rouge d'environ 6 mm.
+COUDE_CAUDAL = 18.0        # hauteur du coude caudal du chevron
+COUDE_CRANIAL = 72.0       # hauteur du coude cranial
+BANDE_LARGEUR = 18.0       # largeur de la bande longitudinale, en curviligne
+CEINTURE_DEMI = 5.45       # demi-largeur des ceintures
+CEINTURE_CAUDALE_DORSALE = 9.0    # hauteur de la ceinture caudale au sommet dorsal
+CEINTURE_CRANIALE_DORSALE = 80.0  # hauteur de la ceinture craniale au sommet dorsal
 
 SAILLIE_ARMATURE = 1.5     # renflement de la piece creme au dessus du pourtour
 DEPRESSION_SKAI = 0.5      # enfoncement de la surface du skai
@@ -88,7 +92,7 @@ def region_surpiqure(su, z):
     """Deux lignes longitudinales encadrant le revêtement, au depart de l'ogive."""
     if not region_skai(su, z):
         return False
-    return abs(su - REP["flanc"]) <= SURPIQURE_LARGEUR / 2.0
+    return abs(su - (REP["flanc"] + 6.0)) <= SURPIQURE_LARGEUR / 2.0
 
 
 def corps():

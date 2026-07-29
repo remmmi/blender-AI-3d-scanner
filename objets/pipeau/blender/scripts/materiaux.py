@@ -12,16 +12,20 @@ import bpy
 # --- definitions ------------------------------------------------------------
 # nom : (couleur lineaire, rugosite, metallique, transmission)
 
+# Revise en P15. Sur l'objet, peinture rouge, skai lateral et revetement dorsal
+# ont la meme clarte : seule la finition les distingue. La premiere passe les
+# separait par la teinte, ce qui est une erreur de nature. Les rouges etaient en
+# outre desatures, canal vert environ treize fois trop haut.
 MATIERES = {
-    "rouge_peint":   ((0.480, 0.030, 0.028), 0.16, 0.0, 0.0),
-    "creme":         ((0.760, 0.720, 0.640), 0.42, 0.0, 0.0),
-    "skai_rouge":    ((0.330, 0.022, 0.024), 0.62, 0.0, 0.0),
-    "fil_surpiqure": ((0.170, 0.014, 0.016), 0.80, 0.0, 0.0),
-    "noir_panneau":  ((0.018, 0.018, 0.021), 0.55, 0.0, 0.0),
-    "blanc_bouton":  ((0.780, 0.775, 0.750), 0.34, 0.0, 0.0),
+    "rouge_peint":   ((0.420, 0.014, 0.012), 0.14, 0.0, 0.0),
+    "creme":         ((0.870, 0.830, 0.735), 0.40, 0.0, 0.0),
+    "skai_rouge":    ((0.420, 0.016, 0.016), 0.74, 0.0, 0.0),
+    "fil_surpiqure": ((0.190, 0.012, 0.012), 0.85, 0.0, 0.0),
+    "noir_panneau":  ((0.008, 0.008, 0.010), 0.70, 0.0, 0.0),
+    "blanc_bouton":  ((0.830, 0.825, 0.805), 0.34, 0.0, 0.0),
     "acier":         ((0.760, 0.765, 0.780), 0.26, 1.0, 0.0),
     "verre":         ((0.960, 0.960, 0.960), 0.04, 0.0, 1.0),
-    "embout_noir":   ((0.022, 0.022, 0.024), 0.32, 0.0, 0.0),
+    "embout_noir":   ((0.014, 0.014, 0.016), 0.30, 0.0, 0.0),
 }
 
 # --- affectation ------------------------------------------------------------
@@ -36,8 +40,8 @@ AFFECTATION = {
     "bouton_reglage": "blanc_bouton",
     "volet_caudal": "creme",
     "embase": "acier",
-    "bague_caudale": "acier",
-    "bague_craniale": "acier",
+    "bague_air": "acier",
+    "capuchon": "acier",
     "collerette": "acier",
     "cylindre_transparent": "verre",
     "embout": "embout_noir",
@@ -103,7 +107,7 @@ def main():
     for nom in MATIERES:
         mat, arbre, bsdf = materiau(nom)
         if nom == "skai_rouge":
-            grain(mat, arbre, bsdf, echelle=900.0, force=0.35)
+            grain(mat, arbre, bsdf, echelle=1400.0, force=0.75)
         if nom == "embout_noir":
             nid_abeille(mat, arbre, bsdf)
         if nom == "acier":

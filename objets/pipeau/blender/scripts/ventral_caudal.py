@@ -31,8 +31,11 @@ PANNEAU_CONGE = 2.0
 
 # --- boutons ----------------------------------------------------------------
 
-BOUTON_FEU = dict(largeur=11.0, hauteur=14.0, z=55.0, saillie=2.0, conge=2.2)
-BOUTON_REGLAGE = dict(largeur=10.0, hauteur=5.0, z=17.0, saillie=1.0, conge=1.5)
+# Positions et cotes revisees en P15 sur la planche p02. Le bouton de mise a feu
+# etait 15 mm trop caudal, et le bouton de reglage etait plus etroit que lui alors
+# que l'objet a le rapport inverse.
+BOUTON_FEU = dict(largeur=11.0, hauteur=13.5, z=69.3, saillie=2.0, conge=2.2)
+BOUTON_REGLAGE = dict(largeur=14.4, hauteur=6.5, z=17.0, saillie=1.0, conge=1.8)
 
 # --- volet caudal -----------------------------------------------------------
 
