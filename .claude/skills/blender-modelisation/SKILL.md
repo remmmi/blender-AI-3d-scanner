@@ -63,7 +63,27 @@ m.axis = 'Z'
 m.angle = 6.283185307      # 2 pi
 m.steps = 64
 m.use_merge_vertices = True
+m.merge_threshold = 1e-5   # le defaut vaut 0.01 m, soit 10 mm
 ```
+
+Deux pieges, tous deux silencieux, tous deux constates :
+
+- le profil doit etre une **chaine d'aretes ouverte**. Ferme, la revolution ne
+  produit aucune face ;
+- le **seuil de fusion par defaut vaut 10 mm**. Sur un objet de poche il fusionne
+  des pieces entieres. Toujours le baisser.
+
+Verifier apres coup le nombre de faces de l'objet evalue :
+
+```python
+d = bpy.context.evaluated_depsgraph_get()
+ev = ob.evaluated_get(d)
+me = ev.to_mesh()
+print(ob.name, "faces:", len(me.polygons))
+ev.to_mesh_clear()
+```
+
+Un modificateur qui ne produit rien ne leve aucune erreur.
 
 ### Paroi et congés
 
@@ -105,6 +125,12 @@ ob.data.auto_smooth_angle = 0.5236 # arete vive au-dela de 30 degres
 
 Une arete decrite comme vive doit le rester : le lissage global est un piege
 frequent qui arrondit tout et fait perdre la fidelite.
+
+### Pieces rapportees affleurantes
+
+Une piece posee exactement au niveau de la surface qui la porte entre en
+concurrence d'affichage avec elle et disparait par intermittence. La decaler de
+quelques centiemes de millimetre vers l'exterieur suffit, et reste invisible.
 
 ## Discipline de construction
 

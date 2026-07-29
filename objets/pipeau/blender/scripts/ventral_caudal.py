@@ -105,7 +105,9 @@ def main():
     soustraire(corps, "creux_panneau", creux)
 
     # --- panneau noir, affleurant le bord rouge
-    panneau = bloc("panneau_ventral", 0.0, PANNEAU_ENFONCEMENT / 2.0, z_centre,
+    # legerement en avant du plan de la face : strictement coplanaire, il perdrait
+    # l'arbitrage d'affichage contre la face rouge
+    panneau = bloc("panneau_ventral", 0.0, PANNEAU_ENFONCEMENT / 2.0 - 0.03, z_centre,
                    PANNEAU_LARGEUR - 0.05, PANNEAU_ENFONCEMENT,
                    PANNEAU_HAUTEUR - 0.05, conge=PANNEAU_CONGE * 0.9, segments=3)
     _geom.ranger(panneau, "corps")

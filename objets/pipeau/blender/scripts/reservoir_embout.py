@@ -26,18 +26,30 @@ Z_BASE = 90.0     # face craniale du corps
 AXE_Y = 25.75      # l'axe de revolution passe par le milieu ventro-dorsal du corps,
                   # non par l'origine du monde qui est au ras de la face ventrale
 
-# profils : listes de (rayon, z), du caudal vers le cranial
+# Profils releves au pixel sur la planche p01, silhouette ligne par ligne.
+# Echelle etablie par deux calibrations concordantes a 1 pour cent pres : largeur
+# de la face laterale du corps (55 mm) et diametre de l'embout (15 mm).
+# Listes de (rayon, z) en millimetres, du caudal vers le cranial.
 PROFILS = {
-    "embase": [(9.0, 90.0), (11.5, 90.5), (12.0, 94.0), (12.0, 95.5)],
-    "bague_caudale": [(12.0, 95.5), (13.0, 96.2), (13.0, 101.5), (12.4, 102.2)],
-    "cylindre_transparent": [(12.4, 102.2), (12.9, 111.0), (12.4, 119.5)],
-    "bague_craniale": [(12.4, 119.5), (13.0, 120.2), (13.0, 126.5), (11.5, 127.5)],
-    "collerette": [(11.5, 127.5), (11.0, 128.0), (9.0, 129.5)],
-    "embout": [(6.2, 129.5), (6.4, 131.0), (7.5, 138.5), (7.5, 140.0), (3.6, 140.0), (3.6, 133.0)],
+    # bague de base, point le plus large de tout l'ensemble
+    "embase": [(13.5, 90.0), (15.0, 90.8), (15.0, 93.8), (14.6, 94.5)],
+    "bague_caudale": [(14.6, 94.5), (14.4, 95.5), (14.4, 100.8), (13.2, 102.0)],
+    # verre renfle en tonneau
+    "cylindre_transparent": [(13.0, 102.0), (13.8, 105.0), (14.3, 108.0),
+                             (13.9, 111.0), (13.2, 114.0)],
+    # chapeau : evasement, gorge portant la lumiere d'air, puis bandeau
+    "bague_craniale": [(13.2, 114.0), (13.4, 114.8), (12.2, 117.5), (11.0, 119.5),
+                       (11.0, 122.0), (11.8, 122.8), (11.8, 126.0), (11.5, 126.5)],
+    "collerette": [(11.5, 126.5), (11.0, 127.5), (8.6, 130.0), (7.6, 131.0)],
+    # chaine ouverte, du canal interne vers la base : une revolution sur profil
+    # ferme ne produit aucune face
+    "embout": [(3.6, 133.0), (3.6, 140.0), (6.8, 140.0), (7.5, 138.6),
+               (7.5, 132.0), (7.4, 131.0)],
 }
 
-# lumiere d'entree d'air, unilaterale, portee par le flanc droit
-LUMIERE = dict(z=98.8, hauteur=2.2, largeur=9.0, profondeur=2.0)
+# Lumiere d'entree d'air : craniale, dans la gorge du chapeau, et non caudale
+# comme la premiere passe le supposait. Nettement visible sur la planche p04.
+LUMIERE = dict(z=120.7, hauteur=2.4, largeur=12.0, profondeur=2.5, rayon=11.0)
 
 
 def revolution(nom, profil, ferme=False):
@@ -65,6 +77,10 @@ def revolution(nom, profil, ferme=False):
     m.steps = SEGMENTS
     m.render_steps = SEGMENTS
     m.use_merge_vertices = True
+    # Le seuil par defaut vaut 0.01 m, soit 10 mm : a l'echelle de l'objet il
+    # fusionne des pieces entieres. L'embout, de 3.6 mm de rayon interne,
+    # disparaissait completement.
+    m.merge_threshold = 1e-5
     m.use_normal_calculate = True
 
     for f in mesh.polygons:
@@ -93,12 +109,13 @@ def lumiere_air(cible):
     bm.free()
     ob = bpy.data.objects.new("outil_lumiere", mesh)
     bpy.context.scene.collection.objects.link(ob)
-    ob.location = (12.6 * MM, AXE_Y * MM, LUMIERE["z"] * MM)
+    ob.location = (LUMIERE["rayon"] * MM, AXE_Y * MM, LUMIERE["z"] * MM)
     outil(ob)
 
-    for m in list(cible.modifiers):
-        if m.name == "lumiere_air":
-            cible.modifiers.remove(m)
+    for c in bpy.data.objects:
+        for m in list(c.modifiers):
+            if m.name == "lumiere_air":
+                c.modifiers.remove(m)
     m = cible.modifiers.new("lumiere_air", "BOOLEAN")
     m.operation = "DIFFERENCE"
     m.object = ob
@@ -113,9 +130,9 @@ def main():
         ob = revolution(nom, PROFILS[nom])
         _geom.ranger(ob, "reservoir")
 
-    lumiere_air(bpy.data.objects["bague_caudale"])
+    lumiere_air(bpy.data.objects["bague_craniale"])
 
-    embout = revolution("embout", PROFILS["embout"], ferme=True)
+    embout = revolution("embout", PROFILS["embout"])
     _geom.ranger(embout, "embout")
 
     for nom in ("embase", "bague_caudale", "cylindre_transparent",

@@ -44,6 +44,35 @@ ecrire par element, la symetrie bilaterale est automatique.
 
 Boite englobante finale 27 x 55 x 140 mm, conforme aux trois cotes de reference.
 
+## 2026-07-29 — Reprise du reservoir et premiere passe de matieres
+
+**Releve photogrammetrique du reservoir.** Silhouette mesuree ligne par ligne sur
+la planche p01, apres seuillage. Echelle etablie par deux calibrations
+independantes concordantes a 1 pour cent : largeur de la face laterale du corps
+(55 mm) et diametre de l'embout (15 mm).
+
+Trois corrections en decoulent :
+
+1. Le point le plus large de l'ensemble n'est pas le verre mais la **bague de
+   base**, a 30 mm de diametre. Le reservoir deborde donc du corps en
+   medio-lateral, ce que confirme la planche p04. La valeur de 26 mm retenue en
+   P7 venait de ma propre liste d'options : anchoring, a ne pas reproduire.
+2. La **lumiere d'entree d'air est craniale**, dans la gorge du chapeau, et non
+   caudale. Nettement lisible sur p04.
+3. Le **verre est renfle en tonneau**, rayon passant de 13.0 a 14.3 mm.
+
+**Matieres.** Neuf materiaux, quatorze objets habilles. Grain du skai et
+facettage en nid d'abeille de l'embout traites en relief de surface, sans
+geometrie.
+
+**Ce qui a resiste**
+
+1. Embout invisible, zero face, sans aucune erreur. Deux causes cumulees : le
+   profil etait ferme, et surtout le seuil de fusion de SCREW vaut 0.01 m par
+   defaut, soit 10 mm, ce qui fusionnait toute une piece de 3.6 mm de rayon.
+2. Panneau ventral invisible : sa face etait strictement coplanaire avec la face
+   ventrale du corps. Decale de 0.03 mm.
+
 **Reste a faire**
 
 - facettage en nid d'abeille de l'embout

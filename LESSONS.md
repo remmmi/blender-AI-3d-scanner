@@ -20,6 +20,16 @@ Capitalisation continue (P18). Une lecon = un fait verifie + ce qu'on en fait.
   `wm.read_factory_settings` coupent le serveur. Vider la scene objet par objet.
 - **`execute_code` ne prouve rien.** Absence d'exception n'est pas resultat
   correct. Terminer chaque script par un `print` de mesures et relire la scene.
+- **Les seuils par defaut de Blender sont en metres, donc enormes a l'echelle
+  d'un objet de poche.** Le `merge_threshold` du modificateur SCREW vaut 0.01 m,
+  soit 10 mm : il a fait disparaitre entierement une piece de 3.6 mm de rayon,
+  sans lever d'erreur, en rendant simplement zero face. Verifier le nombre de
+  faces de l'objet evalue apres tout modificateur, jamais seulement l'absence
+  d'exception.
+- **Une revolution sur profil ferme ne produit rien.** SCREW attend une chaine
+  d'aretes ouverte.
+- **Deux surfaces strictement coplanaires perdent l'arbitrage d'affichage.**
+  Decaler la piece rapportee de quelques centiemes de millimetre suffit.
 - **Ne jamais ecrire de valeur physique de memoire.** Les puissances d'eclairage
   posees d'intuition etaient fausses d'un facteur proche de 50. Une source suit
   le carre de sa distance : toute valeur trouvee ailleurs doit etre rapportee a
