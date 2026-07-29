@@ -1,0 +1,114 @@
+Read prefs: /home/m/.config/blender/3.4/config/userpref.blend
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_ventrale.png'
+ Time: 00:04.14 (Saving: 00:00.40)
+
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_dorsale.png'
+ Time: 00:01.63 (Saving: 00:00.16)
+
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_laterale_droite.png'
+ Time: 00:01.63 (Saving: 00:00.15)
+
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_craniale.png'
+ Time: 00:01.89 (Saving: 00:00.17)
+
+Info: Total files 0 | Changed 0 | Failed 0
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_ventrale.png'
+ Time: 00:04.46 (Saving: 00:00.15)
+
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_dorsale.png'
+ Time: 00:04.30 (Saving: 00:00.17)
+
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_laterale_droite.png'
+ Time: 00:04.21 (Saving: 00:00.15)
+
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_craniale.png'
+ Time: 00:04.42 (Saving: 00:00.16)
+
+Saved: '/tmp/claude-1000/-home-m-projet-blender/cc6228b7-65a7-444f-92cc-bbca62bba1a9/scratchpad/cal_0.05.png'
+ Time: 00:00.51 (Saving: 00:00.01)
+
+Saved: '/tmp/claude-1000/-home-m-projet-blender/cc6228b7-65a7-444f-92cc-bbca62bba1a9/scratchpad/cal_0.1.png'
+ Time: 00:00.48 (Saving: 00:00.01)
+
+Saved: '/tmp/claude-1000/-home-m-projet-blender/cc6228b7-65a7-444f-92cc-bbca62bba1a9/scratchpad/cal_0.2.png'
+ Time: 00:00.47 (Saving: 00:00.01)
+
+Saved: '/tmp/claude-1000/-home-m-projet-blender/cc6228b7-65a7-444f-92cc-bbca62bba1a9/scratchpad/cal_0.4.png'
+ Time: 00:00.47 (Saving: 00:00.01)
+
+Traceback (most recent call last):
+  File "/home/m/.config/blender/3.4/scripts/addons/blender_mcp_addon.py", line 537, in execute_code
+    exec(code, namespace)
+  File "<string>", line 23, in <module>
+  File "/usr/share/blender/scripts/modules/bpy/ops.py", line 113, in __call__
+    ret = _op_call(self.idname_py(), None, kw)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: Cannot render, no camera
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/m/.config/blender/3.4/scripts/addons/blender_mcp_addon.py", line 329, in _execute_command_internal
+    result = handler(**params)
+             ^^^^^^^^^^^^^^^^^
+  File "/home/m/.config/blender/3.4/scripts/addons/blender_mcp_addon.py", line 542, in execute_code
+    raise Exception(f"Code execution error: {str(e)}")
+Exception: Code execution error: Error: Cannot render, no camera
+
+Traceback (most recent call last):
+  File "/home/m/.config/blender/3.4/scripts/addons/blender_mcp_addon.py", line 537, in execute_code
+    exec(code, namespace)
+  File "<string>", line 23, in <module>
+  File "/usr/share/blender/scripts/modules/bpy/ops.py", line 113, in __call__
+    ret = _op_call(self.idname_py(), None, kw)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Error: Cannot render, no camera
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/m/.config/blender/3.4/scripts/addons/blender_mcp_addon.py", line 329, in _execute_command_internal
+    result = handler(**params)
+             ^^^^^^^^^^^^^^^^^
+  File "/home/m/.config/blender/3.4/scripts/addons/blender_mcp_addon.py", line 542, in execute_code
+    raise Exception(f"Code execution error: {str(e)}")
+Exception: Code execution error: Error: Cannot render, no camera
+
+Saved: '/tmp/claude-1000/-home-m-projet-blender/cc6228b7-65a7-444f-92cc-bbca62bba1a9/scratchpad/cal2.png'
+ Time: 00:00.48 (Saving: 00:00.01)
+
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_ventrale.png'
+ Time: 00:04.81 (Saving: 00:00.17)
+
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_dorsale.png'
+ Time: 00:03.80 (Saving: 00:00.17)
+
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_laterale_droite.png'
+ Time: 00:05.11 (Saving: 00:00.17)
+
+Saved: '/home/m/projet/blender/blender/renders/controle_vue_craniale.png'
+ Time: 00:03.87 (Saving: 00:00.20)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_ventrale.png'
+ Time: 00:03.10 (Saving: 00:00.15)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_dorsale.png'
+ Time: 00:03.17 (Saving: 00:00.15)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_laterale_droite.png'
+ Time: 00:05.15 (Saving: 00:00.16)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_craniale.png'
+ Time: 00:04.53 (Saving: 00:00.16)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/ogive_175_vue_craniale.png'
+ Time: 00:04.09 (Saving: 00:00.16)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/ogive_22_vue_craniale.png'
+ Time: 00:04.31 (Saving: 00:00.15)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/ogive_30_vue_craniale.png'
+ Time: 00:04.42 (Saving: 00:00.16)
+
