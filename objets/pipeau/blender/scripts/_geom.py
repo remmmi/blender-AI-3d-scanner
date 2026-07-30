@@ -193,6 +193,16 @@ def x_de_su(su):
     return DEMI[-1][0] if su > ABSCISSES[-1] else DEMI[0][0]
 
 
+def y_de_su(su):
+    """Position ventro-dorsale du point de la section a l'abscisse curviligne su."""
+    for i in range(len(ABSCISSES) - 1):
+        if ABSCISSES[i] <= su <= ABSCISSES[i + 1]:
+            portee = ABSCISSES[i + 1] - ABSCISSES[i]
+            t = 0.0 if portee <= 0 else (su - ABSCISSES[i]) / portee
+            return DEMI[i][1] + t * (DEMI[i + 1][1] - DEMI[i][1])
+    return DEMI[-1][1] if su > ABSCISSES[-1] else DEMI[0][1]
+
+
 def nappe(nom, region, decalage=0.0, epaisseur=1.5, vers_exterieur=True,
           pas_z=0.5, lisse=True, cotes=(1, -1)):
     """Construit une nappe epousant le flanc, restreinte a region(su, z).

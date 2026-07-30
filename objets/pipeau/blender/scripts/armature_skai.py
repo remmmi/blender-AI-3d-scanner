@@ -39,13 +39,17 @@ MM = _geom.MM
 # La piece creme demarre au ras de l'arete du biseau : la bordure rouge que la
 # passe precedente avait interposee n'existe pas. Ce que la planche p03 montrait
 # comme une bande rouge est la facette du biseau, vue moins de face.
-COUDE_CAUDAL = 17.9        # ligne moyenne de la ceinture caudale, cote flanc
-COUDE_CRANIAL = 69.8       # ligne moyenne de la ceinture craniale, cote flanc
+# Les deux bords de la piece sont des SECTIONS PLANES du corps : un plan incline
+# donne une droite oblique sur le flanc plat, epouse la courbure sur le dome, et
+# ne casse jamais au passage de l'un a l'autre. La piece n'a ainsi que huit
+# angles au total, quatre internes et quatre externes, la ou la bande
+# longitudinale rencontre les deux ceintures.
+COUDE_CAUDAL = 17.9        # ligne moyenne de la ceinture caudale, a l'arete du biseau
+COUDE_CRANIAL = 69.8       # ligne moyenne de la ceinture craniale, a l'arete du biseau
+PENTE = 0.2658             # montee craniocaudale par millimetre ventro-dorsal
 BANDE_LARGEUR = 18.0       # largeur de la bande longitudinale, en curviligne
 BORDURE_ROUGE = 0.0
 CEINTURE_DEMI = 4.4        # demi-largeur des ceintures
-CEINTURE_CAUDALE_DORSALE = 9.1    # ligne moyenne de la ceinture caudale, sur le dos
-CEINTURE_CRANIALE_DORSALE = 78.6  # ligne moyenne de la ceinture craniale, sur le dos
 
 SAILLIE_ARMATURE = 1.5     # renflement de la piece creme au dessus du pourtour
 DEPRESSION_SKAI = 0.5      # enfoncement de la surface du skai
@@ -66,46 +70,33 @@ SU_FLANC = REP["flanc"]
 SU_SOMMET = REP["sommet"]
 
 
-def _hauteur_ceinture(su, z_bande, z_dorsal):
-    """Ligne moyenne d'une ceinture.
-
-    Sur le flanc, c'est une droite oblique : la ceinture monte regulierement du
-    ventral vers le dorsal. Des qu'elle aborde le dome dorsal, elle passe a
-    hauteur constante et ceinture la courbure sans plus obliquer. Les deux bords
-    de la piece creme sont donc rectilignes sur le flanc et transversaux sur le
-    dos, conformement a ce que montrent les planches p01 et p04.
-    """
-    if su <= SU_BANDE_DEBUT:
-        return z_bande
-    if su >= SU_FLANC:
-        return z_dorsal
-    t = (su - SU_BANDE_DEBUT) / max(SU_FLANC - SU_BANDE_DEBUT, 1e-6)
-    return z_bande + (z_dorsal - z_bande) * t
+Y_BISEAU = _geom.y_de_su(REP["biseau"])
 
 
-def _dans_ceinture(su, z, z_bande, z_dorsal):
-    return abs(z - _hauteur_ceinture(su, z_bande, z_dorsal)) <= CEINTURE_DEMI
+def _hauteur_ceinture(su, z_biseau, sens):
+    """Ligne moyenne d'une ceinture, definie comme une section plane du corps."""
+    return z_biseau + sens * PENTE * (_geom.y_de_su(su) - Y_BISEAU)
+
+
+def _dans_ceinture(su, z, z_biseau, sens):
+    return abs(z - _hauteur_ceinture(su, z_biseau, sens)) <= CEINTURE_DEMI
 
 
 def region_armature(su, z):
-    if SU_BANDE_DEBUT <= su <= SU_BANDE_FIN and COUDE_CAUDAL <= z <= COUDE_CRANIAL:
-        return True
-    if su < SU_BANDE_DEBUT:
-        return False
     if su < REP["biseau"]:
         return False
-    if _dans_ceinture(su, z, COUDE_CAUDAL, CEINTURE_CAUDALE_DORSALE):
+    bas = _hauteur_ceinture(su, COUDE_CAUDAL, +1.0)
+    haut = _hauteur_ceinture(su, COUDE_CRANIAL, +1.0)
+    if SU_BANDE_DEBUT <= su <= SU_BANDE_FIN and bas <= z <= haut:
         return True
-    if _dans_ceinture(su, z, COUDE_CRANIAL, CEINTURE_CRANIALE_DORSALE):
-        return True
-    return False
+    return abs(z - bas) <= CEINTURE_DEMI or abs(z - haut) <= CEINTURE_DEMI
 
 
 def region_skai(su, z):
     if su <= SU_BANDE_FIN:
         return False
-    bas = _hauteur_ceinture(su, COUDE_CAUDAL, CEINTURE_CAUDALE_DORSALE) + CEINTURE_DEMI
-    haut = _hauteur_ceinture(su, COUDE_CRANIAL, CEINTURE_CRANIALE_DORSALE) - CEINTURE_DEMI
+    bas = _hauteur_ceinture(su, COUDE_CAUDAL, +1.0) + CEINTURE_DEMI
+    haut = _hauteur_ceinture(su, COUDE_CRANIAL, +1.0) - CEINTURE_DEMI
     return bas <= z <= haut
 
 
