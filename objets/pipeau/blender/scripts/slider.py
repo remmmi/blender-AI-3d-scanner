@@ -19,9 +19,10 @@ if DOSSIER not in sys.path:
 import _geom
 importlib.reload(_geom)
 
-# La bordure rouge est definie dans armature_skai.py. On la recopie plutot que
-# d'importer ce module, dont le chargement relancerait toute sa construction.
-BORDURE_ROUGE = 6.0
+# Le slider est porte par la facette du biseau ventro-lateral, non par une
+# bordure rouge : sur la planche p01 la piece creme demarre au ras de l'arete du
+# biseau. La planche p03, prise moins de face, laissait croire a une bande rouge
+# intermediaire ; c'etait la facette elle-meme.
 
 MM = _geom.MM
 
@@ -37,7 +38,8 @@ STRIES = 11
 STRIE_LARGEUR = 0.45
 STRIE_PROFONDEUR = 0.25
 
-SU_CENTRE = _geom.reperes()["biseau"] + BORDURE_ROUGE / 2.0
+_REP = _geom.reperes()
+SU_CENTRE = 0.5 * (_REP["ventrale"] + _REP["biseau"])
 SU_MIN = SU_CENTRE - LARGEUR / 2.0
 SU_MAX = SU_CENTRE + LARGEUR / 2.0
 Z_MIN = Z_CENTRE - HAUTEUR / 2.0

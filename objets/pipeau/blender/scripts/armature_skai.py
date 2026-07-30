@@ -35,15 +35,17 @@ MM = _geom.MM
 # La premiere passe donnait une piece creme de 8.5 mm, soit moins de la moitie de
 # sa largeur reelle, et faisait mourir le creme sur l'arete craniale alors que
 # l'objet interpose toujours une bande de peinture rouge d'environ 6 mm.
-COUDE_CAUDAL = 18.0        # hauteur du coude caudal du chevron
-COUDE_CRANIAL = 72.0       # hauteur du coude cranial
+# Cotes relevees sur la planche p01, la plus perpendiculaire au flanc.
+# La piece creme demarre au ras de l'arete du biseau : la bordure rouge que la
+# passe precedente avait interposee n'existe pas. Ce que la planche p03 montrait
+# comme une bande rouge est la facette du biseau, vue moins de face.
+COUDE_CAUDAL = 17.9        # ligne moyenne de la ceinture caudale, cote flanc
+COUDE_CRANIAL = 69.8       # ligne moyenne de la ceinture craniale, cote flanc
 BANDE_LARGEUR = 18.0       # largeur de la bande longitudinale, en curviligne
-# La piece creme ne demarre pas sur l'arete du biseau : une bordure de peinture
-# rouge court entre les deux, et c'est elle qui porte le slider du flanc droit.
-BORDURE_ROUGE = 6.0
-CEINTURE_DEMI = 5.45       # demi-largeur des ceintures
-CEINTURE_CAUDALE_DORSALE = 9.0    # hauteur de la ceinture caudale au sommet dorsal
-CEINTURE_CRANIALE_DORSALE = 80.0  # hauteur de la ceinture craniale au sommet dorsal
+BORDURE_ROUGE = 0.0
+CEINTURE_DEMI = 4.4        # demi-largeur des ceintures
+CEINTURE_CAUDALE_DORSALE = 9.1    # ligne moyenne de la ceinture caudale, sur le dos
+CEINTURE_CRANIALE_DORSALE = 78.6  # ligne moyenne de la ceinture craniale, sur le dos
 
 SAILLIE_ARMATURE = 1.5     # renflement de la piece creme au dessus du pourtour
 DEPRESSION_SKAI = 0.5      # enfoncement de la surface du skai
@@ -60,14 +62,24 @@ REP = _geom.reperes()
 SU_BANDE_DEBUT = REP["biseau"] + BORDURE_ROUGE
 SU_BANDE_FIN = SU_BANDE_DEBUT + BANDE_LARGEUR
 SU_MILIEU_BANDE = 0.5 * (SU_BANDE_DEBUT + SU_BANDE_FIN)
+SU_FLANC = REP["flanc"]
 SU_SOMMET = REP["sommet"]
 
 
 def _hauteur_ceinture(su, z_bande, z_dorsal):
-    """Ligne moyenne d'une ceinture : elle part du bout de la bande et oblique."""
-    if su <= SU_MILIEU_BANDE:
+    """Ligne moyenne d'une ceinture.
+
+    Sur le flanc, c'est une droite oblique : la ceinture monte regulierement du
+    ventral vers le dorsal. Des qu'elle aborde le dome dorsal, elle passe a
+    hauteur constante et ceinture la courbure sans plus obliquer. Les deux bords
+    de la piece creme sont donc rectilignes sur le flanc et transversaux sur le
+    dos, conformement a ce que montrent les planches p01 et p04.
+    """
+    if su <= SU_BANDE_DEBUT:
         return z_bande
-    t = (su - SU_MILIEU_BANDE) / max(SU_SOMMET - SU_MILIEU_BANDE, 1e-6)
+    if su >= SU_FLANC:
+        return z_dorsal
+    t = (su - SU_BANDE_DEBUT) / max(SU_FLANC - SU_BANDE_DEBUT, 1e-6)
     return z_bande + (z_dorsal - z_bande) * t
 
 
