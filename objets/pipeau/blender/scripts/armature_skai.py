@@ -46,6 +46,10 @@ SAILLIE_ARMATURE = 1.5     # renflement de la piece creme au dessus du pourtour
 DEPRESSION_SKAI = 0.5      # enfoncement de la surface du skai
 PROFONDEUR_ENTAILLE = 1.0  # profondeur de la decoupe recevant le skai
 
+# Pas de calcul de la nappe. Les bords obliques des ceintures sont quantifies par
+# ce pas : a 0.5 mm ils sortaient en marches de 1.2 mm, nettement visibles.
+PAS_Z = 0.2
+
 SURPIQURE_LARGEUR = 0.6
 SURPIQURE_PROFONDEUR = 0.35
 
@@ -108,7 +112,7 @@ def entailler_skai():
         "outil_entaille_skai", region_skai,
         decalage=-PROFONDEUR_ENTAILLE,
         epaisseur=PROFONDEUR_ENTAILLE + 3.0,
-        vers_exterieur=True, lisse=False,
+        vers_exterieur=True, lisse=False, pas_z=PAS_Z,
     )
     outil.display_type = "WIRE"
     outil.hide_render = True
@@ -129,6 +133,7 @@ def main():
     armature = _geom.nappe(
         "armature", region_armature,
         decalage=0.0, epaisseur=SAILLIE_ARMATURE, vers_exterieur=True,
+        pas_z=PAS_Z,
     )
     b = armature.modifiers.new("renflement", "BEVEL")
     b.width = 0.9 * MM
@@ -142,6 +147,7 @@ def main():
     skai = _geom.nappe(
         "skai", region_skai,
         decalage=-DEPRESSION_SKAI, epaisseur=0.5, vers_exterieur=False,
+        pas_z=PAS_Z,
     )
     _geom.ranger(skai, "corps")
 
@@ -149,7 +155,7 @@ def main():
         "surpiqures", region_surpiqure,
         decalage=-DEPRESSION_SKAI + SURPIQURE_PROFONDEUR,
         epaisseur=SURPIQURE_PROFONDEUR, vers_exterieur=False,
-        pas_z=0.5,
+        pas_z=PAS_Z,
     )
     if surpiqure:
         _geom.ranger(surpiqure, "corps")
