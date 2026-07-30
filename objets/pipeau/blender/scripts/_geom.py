@@ -277,6 +277,76 @@ def nappe(nom, region, decalage=0.0, epaisseur=1.5, vers_exterieur=True,
     return ob
 
 
+def bande(nom, su_min, su_max, z_bas, z_haut, hauteur, epaisseur=2.5,
+          pas_su=0.4, divisions=24, lisse=True, cotes=(1, -1)):
+    """Nappe dont la grille epouse ses propres bords.
+
+    Contrairement a nappe(), qui decoupe une grille reguliere et laisse donc des
+    marches d'escalier le long des bords obliques, ce constructeur echantillonne
+    la hauteur entre z_bas(su) et z_haut(su). Les bords sont exacts quelle que
+    soit leur inclinaison.
+
+    z_bas, z_haut  fonctions su -> millimetres
+    hauteur        fonction (su, z) -> deport radial en millimetres
+    """
+    old = bpy.data.objects.get(nom)
+    if old:
+        bpy.data.objects.remove(old, do_unlink=True)
+
+    n_su = max(int(round((su_max - su_min) / pas_su)), 2)
+    sus = [su_min + (su_max - su_min) * i / float(n_su) for i in range(n_su + 1)]
+
+    bm = bmesh.new()
+    total = 0
+    for cote in cotes:
+        grille = {}
+        for i, su in enumerate(sus):
+            x, y = x_de_su(su), y_de_su(su)
+            nx, ny = _normale_de_su(su)
+            bas, haut = z_bas(su), z_haut(su)
+            for j in range(divisions + 1):
+                z = bas + (haut - bas) * j / float(divisions)
+                d = hauteur(su, z)
+                grille[(i, j)] = ((x + nx * d) * cote, y + ny * d, z)
+        for i in range(n_su):
+            for j in range(divisions):
+                quad = [grille[(i, j)], grille[(i + 1, j)],
+                        grille[(i + 1, j + 1)], grille[(i, j + 1)]]
+                if cote < 0:
+                    quad = list(reversed(quad))
+                bm.faces.new([bm.verts.new((p[0] * MM, p[1] * MM, p[2] * MM))
+                              for p in quad])
+                total += 1
+
+    bmesh.ops.remove_doubles(bm, verts=bm.verts[:], dist=1e-6)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    mesh = bpy.data.meshes.new(nom)
+    bm.to_mesh(mesh)
+    bm.free()
+
+    ob = bpy.data.objects.new(nom, mesh)
+    bpy.context.scene.collection.objects.link(ob)
+    m = ob.modifiers.new("epaisseur", "SOLIDIFY")
+    # une epaisseur negative fait porter la matiere vers l'exterieur : utile pour
+    # les outils de decoupe, qui doivent depasser de la surface
+    m.thickness = abs(epaisseur) * MM
+    m.offset = 1.0 if epaisseur < 0 else -1.0
+    if lisse:
+        for f in mesh.polygons:
+            f.use_smooth = True
+        mesh.use_auto_smooth = True
+        mesh.auto_smooth_angle = math.radians(20.0)
+    print("bande %-14s %5d faces" % (nom, total))
+    return ob
+
+
+def _normale_de_su(su):
+    for i in range(len(ABSCISSES) - 1):
+        if ABSCISSES[i] <= su <= ABSCISSES[i + 1]:
+            return NORMALES[i]
+    return NORMALES[-1]
+
+
 def collection(nom):
     col = bpy.data.collections.get(nom)
     if col is None:

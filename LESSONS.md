@@ -30,6 +30,14 @@ Capitalisation continue (P18). Une lecon = un fait verifie + ce qu'on en fait.
   d'aretes ouverte.
 - **Deux surfaces strictement coplanaires perdent l'arbitrage d'affichage.**
   Decaler la piece rapportee de quelques centiemes de millimetre suffit.
+- **Une grille reguliere decoupee produit des bords en escalier.** Toute piece
+  dont le bord est oblique par rapport a la grille sort crenelee. La parade n'est
+  pas de raffiner la grille mais de la faire epouser les bords : echantillonner
+  entre les deux limites de la piece plutot que decouper dans un quadrillage.
+- **SOLIDIFY : batir toujours depuis la face exterieure et epaissir vers
+  l'interieur.** Construite en sens inverse, la piece produit un solide retourne.
+  Une decoupe booleenne avec un tel solide ne leve aucune erreur : elle vide
+  entierement l'objet cible.
 - **Ne jamais ecrire de valeur physique de memoire.** Les puissances d'eclairage
   posees d'intuition etaient fausses d'un facteur proche de 50. Une source suit
   le carre de sa distance : toute valeur trouvee ailleurs doit etre rapportee a

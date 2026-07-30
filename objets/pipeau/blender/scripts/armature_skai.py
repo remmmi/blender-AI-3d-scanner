@@ -178,13 +178,23 @@ def corps():
     return ob
 
 
+def _bornes_skai():
+    bas = lambda su: _hauteur_ceinture(su, COUDE_CAUDAL, -1.0) + CEINTURE_DEMI
+    haut = lambda su: _hauteur_ceinture(su, COUDE_CRANIAL, +1.0) - CEINTURE_DEMI
+    return bas, haut
+
+
 def entailler_skai():
     """Creuse le logement du skai dans le corps."""
-    outil = _geom.nappe(
-        "outil_entaille_skai", region_skai,
-        decalage=-PROFONDEUR_ENTAILLE,
-        epaisseur=PROFONDEUR_ENTAILLE + 3.0,
-        vers_exterieur=True, lisse=False, pas_z=PAS_Z,
+    # L'outil est bati depuis sa face exterieure et epaissi vers l'interieur,
+    # meme convention que les pieces visibles. Construit en sens inverse, il
+    # produisait un solide retourne qui vidait entierement le corps.
+    bas, haut = _bornes_skai()
+    outil = _geom.bande(
+        "outil_entaille_skai", SU_BANDE_FIN, SU_SOMMET, bas, haut,
+        lambda su, z: 3.0,
+        epaisseur=PROFONDEUR_ENTAILLE + 3.0, pas_su=0.25, divisions=64,
+        lisse=False,
     )
     outil.display_type = "WIRE"
     outil.hide_render = True
@@ -202,21 +212,32 @@ def entailler_skai():
 
 
 def main():
-    # le profil en travers est porte par le deport radial, non par un
-    # modificateur de conge : chaque bord a sa propre loi
-    armature = _geom.nappe(
-        "armature", region_armature,
-        decalage=hauteur_armature, epaisseur=2.5, vers_exterieur=False,
-        pas_z=PAS_Z,
-    )
-    _geom.ranger(armature, "corps")
+    # Trois nappes dont la grille epouse les bords, au lieu d'une nappe decoupee
+    # dans une grille horizontale : les bords obliques sortaient en escalier.
+    marge = CEINTURE_DEMI
+    bas = lambda su: _hauteur_ceinture(su, COUDE_CAUDAL, -1.0)
+    haut = lambda su: _hauteur_ceinture(su, COUDE_CRANIAL, +1.0)
+
+    morceaux = [
+        ("armature_bande", SU_BANDE_DEBUT, SU_BANDE_FIN,
+         lambda su: bas(su) - marge, lambda su: haut(su) + marge, 48),
+        ("armature_ceinture_caudale", SU_BANDE_FIN, SU_SOMMET,
+         lambda su: bas(su) - marge, lambda su: bas(su) + marge, 24),
+        ("armature_ceinture_craniale", SU_BANDE_FIN, SU_SOMMET,
+         lambda su: haut(su) - marge, lambda su: haut(su) + marge, 24),
+    ]
+    for nom, su0, su1, zb, zh, div in morceaux:
+        ob = _geom.bande(nom, su0, su1, zb, zh, hauteur_armature,
+                         epaisseur=2.5, pas_su=0.25, divisions=div)
+        _geom.ranger(ob, "corps")
 
     outil = entailler_skai()
 
-    skai = _geom.nappe(
-        "skai", region_skai,
-        decalage=-DEPRESSION_SKAI, epaisseur=0.5, vers_exterieur=False,
-        pas_z=PAS_Z,
+    bas_s, haut_s = _bornes_skai()
+    skai = _geom.bande(
+        "skai", SU_BANDE_FIN, SU_SOMMET, bas_s, haut_s,
+        lambda su, z: -DEPRESSION_SKAI,
+        epaisseur=0.5, pas_su=0.25, divisions=64,
     )
     _geom.ranger(skai, "corps")
 

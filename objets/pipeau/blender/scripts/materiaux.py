@@ -34,7 +34,9 @@ MATIERES = {
 
 AFFECTATION = {
     "corps_volume": "rouge_peint",
-    "armature": "creme",
+    "armature_bande": "creme",
+    "armature_ceinture_caudale": "creme",
+    "armature_ceinture_craniale": "creme",
     "skai": "skai_rouge",
     "surpiqures": "fil_surpiqure",
     "panneau_ventral": "noir_panneau",

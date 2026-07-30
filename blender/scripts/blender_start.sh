@@ -9,7 +9,14 @@
 set -u
 
 PROJET="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+
+# On ouvre la scene du sous-projet actif, pas celle de la racine.
 SCENE="$PROJET/blender/scene.blend"
+if [ -f "$PROJET/objets/ACTIF" ]; then
+  ACTIF="$(cat "$PROJET/objets/ACTIF")"
+  [ -f "$PROJET/objets/$ACTIF/blender/scene.blend" ] &&
+    SCENE="$PROJET/objets/$ACTIF/blender/scene.blend"
+fi
 LOG="$PROJET/blender/blender.log"
 PIDFILE="$PROJET/blender/blender.pid"
 

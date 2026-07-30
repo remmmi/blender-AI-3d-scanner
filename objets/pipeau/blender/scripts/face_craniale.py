@@ -34,7 +34,7 @@ JEU = 0.02                      # decalage evitant la concurrence d'affichage
 CHANFREIN_Z_BAS = 80.0
 CHANFREIN_Y_HAUT = 9.887
 
-PLAQUE_CONGE = 3.0
+PLAQUE_EPAISSEUR = 2.0
 
 
 def prisme_section(nom, z0, z1):
@@ -45,6 +45,51 @@ def prisme_section(nom, z0, z1):
     pts = _geom.section_fermee()
     bm = bmesh.new()
     verts = [bm.verts.new((x * MM, y * MM, z0 * MM)) for (x, y) in pts]
+    bm.faces.new(verts)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    ret = bmesh.ops.extrude_face_region(bm, geom=bm.faces[:])
+    hauts = [e for e in ret["geom"] if isinstance(e, bmesh.types.BMVert)]
+    bmesh.ops.translate(bm, verts=hauts, vec=(0.0, 0.0, (z1 - z0) * MM))
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
+    mesh = bpy.data.meshes.new(nom)
+    bm.to_mesh(mesh)
+    bm.free()
+    ob = bpy.data.objects.new(nom, mesh)
+    bpy.context.scene.collection.objects.link(ob)
+    return ob
+
+
+def contour_retire(retrait, y_min):
+    """Contour de la face craniale, rentre de `retrait` millimetres.
+
+    Chaque point de la section est deplace vers l'interieur suivant sa normale,
+    puis le contour est coupe droit du cote ventral, la ou le chanfrein a enleve
+    la matiere.
+    """
+    points = []
+    droite = list(zip(_geom.DEMI, _geom.NORMALES))
+    gauche = [((-x, y), (-nx, ny)) for (x, y), (nx, ny) in reversed(droite[1:-1])]
+    for (x, y), (nx, ny) in droite + gauche:
+        points.append((x - nx * retrait, y - ny * retrait))
+
+    # coupe droite du cote ventral
+    garde = []
+    for i, (x, y) in enumerate(points):
+        precedent = points[i - 1]
+        if (precedent[1] < y_min) != (y < y_min):
+            t = (y_min - precedent[1]) / (y - precedent[1])
+            garde.append((precedent[0] + t * (x - precedent[0]), y_min))
+        if y >= y_min:
+            garde.append((x, y))
+    return garde
+
+
+def polygone(nom, points, z0, z1):
+    old = bpy.data.objects.get(nom)
+    if old:
+        bpy.data.objects.remove(old, do_unlink=True)
+    bm = bmesh.new()
+    verts = [bm.verts.new((x * MM, y * MM, z0 * MM)) for (x, y) in points]
     bm.faces.new(verts)
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces[:])
     ret = bmesh.ops.extrude_face_region(bm, geom=bm.faces[:])
@@ -146,17 +191,18 @@ def main():
     _geom.ranger(peau, "corps")
 
     # --- plaque d'aluminium recevant l'assise du reservoir
-    y_min = CHANFREIN_Y_HAUT + BORDURE
-    y_max = _geom.SOMMET - BORDURE
-    plaque = bloc("plaque_alu",
-                  (0.0, (y_min + y_max) / 2.0, Z_FACE - 1.0 + JEU * 2.0),
-                  (2.0 * _geom.DEMI_MAX - 2.0 * BORDURE,
-                   y_max - y_min, 2.0),
-                  conge=PLAQUE_CONGE)
+    # elle suit le contour de la face craniale, rentre de 1 mm, ce retrait
+    # laissant apparaitre l'encadrement de silicone
+    contour = contour_retire(BORDURE, CHANFREIN_Y_HAUT + BORDURE)
+    plaque = polygone("plaque_alu", contour,
+                      Z_FACE - PLAQUE_EPAISSEUR, Z_FACE + JEU * 2.0)
     _geom.ranger(plaque, "corps")
 
-    print("plaque alu: %.1f x %.1f mm, silicone visible sur %.1f mm de pourtour"
-          % (2.0 * _geom.DEMI_MAX - 2.0 * BORDURE, y_max - y_min, BORDURE))
+    largeur = max(x for (x, _) in contour) - min(x for (x, _) in contour)
+    profondeur = max(y for (_, y) in contour) - min(y for (_, y) in contour)
+    print("plaque alu: contour suivi, %d points, encombrement %.1f x %.1f mm, "
+          "encadrement silicone %.1f mm"
+          % (len(contour), largeur, profondeur, BORDURE))
 
 
 main()
