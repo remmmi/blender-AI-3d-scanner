@@ -46,7 +46,9 @@ MM = _geom.MM
 # longitudinale rencontre les deux ceintures.
 COUDE_CAUDAL = 17.9        # ligne moyenne de la ceinture caudale, a l'arete du biseau
 COUDE_CRANIAL = 69.8       # ligne moyenne de la ceinture craniale, a l'arete du biseau
-PENTE = 0.2658             # montee craniocaudale par millimetre ventro-dorsal
+PENTE = 0.2658             # variation craniocaudale par millimetre ventro-dorsal,
+                           # montante pour la ceinture craniale, descendante pour
+                           # la caudale : le chevron s'ouvre vers le dorsal
 BANDE_LARGEUR = 18.0       # largeur de la bande longitudinale, en curviligne
 BORDURE_ROUGE = 0.0
 CEINTURE_DEMI = 4.4        # demi-largeur des ceintures
@@ -85,7 +87,9 @@ def _dans_ceinture(su, z, z_biseau, sens):
 def region_armature(su, z):
     if su < REP["biseau"]:
         return False
-    bas = _hauteur_ceinture(su, COUDE_CAUDAL, +1.0)
+    # la ceinture caudale descend vers le dorsal, la craniale monte : le chevron
+    # s'ouvre vers le dorsal
+    bas = _hauteur_ceinture(su, COUDE_CAUDAL, -1.0)
     haut = _hauteur_ceinture(su, COUDE_CRANIAL, +1.0)
     if SU_BANDE_DEBUT <= su <= SU_BANDE_FIN and bas <= z <= haut:
         return True
@@ -95,7 +99,7 @@ def region_armature(su, z):
 def region_skai(su, z):
     if su <= SU_BANDE_FIN:
         return False
-    bas = _hauteur_ceinture(su, COUDE_CAUDAL, +1.0) + CEINTURE_DEMI
+    bas = _hauteur_ceinture(su, COUDE_CAUDAL, -1.0) + CEINTURE_DEMI
     haut = _hauteur_ceinture(su, COUDE_CRANIAL, +1.0) - CEINTURE_DEMI
     return bas <= z <= haut
 
