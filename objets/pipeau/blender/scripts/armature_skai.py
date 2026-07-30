@@ -51,9 +51,18 @@ PENTE = 0.2658             # variation craniocaudale par millimetre ventro-dorsa
                            # la caudale : le chevron s'ouvre vers le dorsal
 BANDE_LARGEUR = 18.0       # largeur de la bande longitudinale, en curviligne
 BORDURE_ROUGE = 0.0
-CEINTURE_DEMI = 4.4        # demi-largeur des ceintures
+CEINTURE_DEMI = 4.0        # demi-largeur des ceintures, soit 8 mm au total
 
-SAILLIE_ARMATURE = 1.5     # renflement de la piece creme au dessus du pourtour
+SAILLIE_ARMATURE = 1.5     # hauteur du plan de la piece creme au dessus du pourtour
+
+# Profil en travers de la piece, cote par l'utilisateur. Largeur totale 8 mm.
+# Du bord tourne vers le skai vers le bord tourne vers l'extremite :
+#   1 mm de chanfrein arrondi, 4 mm de plan, 3 mm de biseau plan.
+# Le bord vif du biseau est adouci sur 0.5 mm.
+PROFIL_CHANFREIN = 1.0     # cote skai, arrondi
+PROFIL_PLAN = 4.0
+PROFIL_BISEAU = 3.0        # cote extremite, plan
+PROFIL_ARETE = 0.5
 DEPRESSION_SKAI = 0.5      # enfoncement de la surface du skai
 PROFONDEUR_ENTAILLE = 1.0  # profondeur de la decoupe recevant le skai
 
@@ -114,6 +123,54 @@ def region_surpiqure(su, z):
     return abs(abs(_geom.x_de_su(su)) - SURPIQURE_X) <= SURPIQURE_LARGEUR / 2.0
 
 
+def _rampe_biseau(d):
+    """Biseau plan de 3 mm, arete adoucie sur les 0.5 derniers millimetres."""
+    if d <= 0.0:
+        return 0.0
+    if d >= PROFIL_BISEAU:
+        return 1.0
+    v = d / PROFIL_BISEAU
+    if d < PROFIL_ARETE:
+        # adoucissement de l'arete vive du biseau
+        u = d / PROFIL_ARETE
+        v *= u * u * (3.0 - 2.0 * u)
+    return v
+
+
+def _rampe_chanfrein(d):
+    """Conge arrondi de 1 mm, cote skai."""
+    if d <= 0.0:
+        return 0.0
+    if d >= PROFIL_CHANFREIN:
+        return 1.0
+    u = d / PROFIL_CHANFREIN
+    return u * u * (3.0 - 2.0 * u)
+
+
+def hauteur_armature(su, z):
+    """Profil en travers de la piece creme, en millimetres au dessus du pourtour."""
+    if not region_armature(su, z):
+        return 0.0
+    bas = _hauteur_ceinture(su, COUDE_CAUDAL, -1.0)
+    haut = _hauteur_ceinture(su, COUDE_CRANIAL, +1.0)
+
+    # bords tournes vers les extremites : biseau plan de 3 mm
+    facteur = min(_rampe_biseau((haut + CEINTURE_DEMI) - z),
+                  _rampe_biseau(z - (bas - CEINTURE_DEMI)))
+
+    # bords tournes vers le skai : chanfrein arrondi de 1 mm
+    if su > SU_BANDE_FIN:
+        facteur = min(facteur,
+                      _rampe_chanfrein((haut - CEINTURE_DEMI) - z)
+                      if z < haut else 1.0,
+                      _rampe_chanfrein(z - (bas + CEINTURE_DEMI))
+                      if z > bas else 1.0)
+    else:
+        facteur = min(facteur, _rampe_chanfrein(SU_BANDE_FIN - su))
+
+    return SAILLIE_ARMATURE * facteur
+
+
 def corps():
     ob = bpy.data.objects.get("corps_volume")
     if ob is None:
@@ -145,16 +202,13 @@ def entailler_skai():
 
 
 def main():
+    # le profil en travers est porte par le deport radial, non par un
+    # modificateur de conge : chaque bord a sa propre loi
     armature = _geom.nappe(
         "armature", region_armature,
-        decalage=0.0, epaisseur=SAILLIE_ARMATURE, vers_exterieur=True,
+        decalage=hauteur_armature, epaisseur=2.5, vers_exterieur=False,
         pas_z=PAS_Z,
     )
-    b = armature.modifiers.new("renflement", "BEVEL")
-    b.width = 0.9 * MM
-    b.segments = 3
-    b.limit_method = "ANGLE"
-    b.angle_limit = math.radians(35.0)
     _geom.ranger(armature, "corps")
 
     outil = entailler_skai()

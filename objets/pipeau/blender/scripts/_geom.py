@@ -208,7 +208,9 @@ def nappe(nom, region, decalage=0.0, epaisseur=1.5, vers_exterieur=True,
     """Construit une nappe epousant le flanc, restreinte a region(su, z).
 
     region  fonction (su, z) -> bool, su etant l'abscisse symetrique
-    decalage  deport radial de la surface de reference, en millimetres
+    decalage  deport radial de la surface de reference, en millimetres. Peut etre
+              un nombre, ou une fonction (su, z) -> millimetres, ce qui permet de
+              donner a une piece rapportee un profil en travers.
     epaisseur  epaisseur donnee par le modificateur SOLIDIFY
     """
     old = bpy.data.objects.get(nom)
@@ -223,14 +225,14 @@ def nappe(nom, region, decalage=0.0, epaisseur=1.5, vers_exterieur=True,
     total = 0
 
     for cote in cotes:
+        variable = callable(decalage)
         grille = {}
         for i, (x, y) in enumerate(DEMI):
             su = ABSCISSES[i]
             nx, ny = NORMALES[i]
-            px = (x + nx * decalage) * cote
-            py = y + ny * decalage
             for j, z in enumerate(zs):
-                grille[(i, j)] = (px, py, z, su)
+                d = decalage(su, z) if variable else decalage
+                grille[(i, j)] = ((x + nx * d) * cote, y + ny * d, z, su)
 
         for i in range(len(DEMI) - 1):
             for j in range(nz - 1):

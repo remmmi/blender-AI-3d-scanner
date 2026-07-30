@@ -25,7 +25,9 @@ MATIERES = {
     "blanc_bouton":  ((0.830, 0.825, 0.805), 0.34, 0.0, 0.0),
     "acier":         ((0.760, 0.765, 0.780), 0.26, 1.0, 0.0),
     "verre":         ((0.960, 0.960, 0.960), 0.04, 0.0, 1.0),
-    "embout_noir":   ((0.014, 0.014, 0.016), 0.30, 0.0, 0.0),
+    "embout_noir":   ((0.014, 0.014, 0.016), 0.05, 0.0, 0.0),
+    "silicone_rouge":((0.330, 0.020, 0.018), 0.52, 0.0, 0.0),
+    "alu_brut":      ((0.700, 0.702, 0.706), 0.38, 1.0, 0.0),
 }
 
 # --- affectation ------------------------------------------------------------
@@ -40,6 +42,9 @@ AFFECTATION = {
     "bouton_reglage": "blanc_bouton",
     "volet_caudal": "creme",
     "cheminee": "acier",
+    "silicone_cranial": "silicone_rouge",
+    "silicone_biseau": "silicone_rouge",
+    "plaque_alu": "alu_brut",
     "slider": "creme",
     "stries_slider": "creme",
     "embase": "acier",
@@ -51,7 +56,7 @@ AFFECTATION = {
 }
 
 GRAIN_SKAI = 0.0009      # amplitude du grain du skai, en metres
-NID_ABEILLE = 260.0      # densite du facettage de l'embout
+NID_ABEILLE = 420.0      # densite de la marbrure en nid d'abeille de l'embout
 
 
 def materiau(nom):
@@ -88,21 +93,43 @@ def grain(mat, arbre, bsdf, echelle, force):
 
 
 def nid_abeille(mat, arbre, bsdf):
-    """Facettage hexagonal de l'embout, rendu en relief et non en geometrie."""
+    """Marbrure en nid d'abeille de l'embout.
+
+    C'est un motif de COULEUR, non un relief : la surface est parfaitement lisse
+    et brillante. La premiere passe la traitait en relief, ce qui donnait un
+    facettage grossier absent de l'objet.
+    """
     coord = arbre.nodes.new("ShaderNodeTexCoord")
-    voronoi = arbre.nodes.new("ShaderNodeTexVoronoi")
-    voronoi.feature = "DISTANCE_TO_EDGE"
-    voronoi.inputs["Scale"].default_value = NID_ABEILLE
+    cellules = arbre.nodes.new("ShaderNodeTexVoronoi")
+    cellules.feature = "F1"
+    cellules.inputs["Scale"].default_value = NID_ABEILLE
+    joints = arbre.nodes.new("ShaderNodeTexVoronoi")
+    joints.feature = "DISTANCE_TO_EDGE"
+    joints.inputs["Scale"].default_value = NID_ABEILLE
     rampe = arbre.nodes.new("ShaderNodeValToRGB")
     rampe.color_ramp.elements[0].position = 0.0
-    rampe.color_ramp.elements[1].position = 0.12
-    relief = arbre.nodes.new("ShaderNodeBump")
-    relief.inputs["Strength"].default_value = 0.9
-    relief.inputs["Distance"].default_value = 0.0004
-    arbre.links.new(coord.outputs["Object"], voronoi.inputs["Vector"])
-    arbre.links.new(voronoi.outputs["Distance"], rampe.inputs["Fac"])
-    arbre.links.new(rampe.outputs["Color"], relief.inputs["Height"])
-    arbre.links.new(relief.outputs["Normal"], bsdf.inputs["Normal"])
+    rampe.color_ramp.elements[0].color = (0.055, 0.055, 0.060, 1.0)
+    rampe.color_ramp.elements[1].position = 0.20
+    rampe.color_ramp.elements[1].color = (0.010, 0.010, 0.012, 1.0)
+    # la couleur de cellule de Voronoi est aleatoire et saturee : on la ramene en
+    # niveaux de gris avant de la faire jouer, sinon la marbrure part en couleurs
+    gris = arbre.nodes.new("ShaderNodeRGBToBW")
+    tons = arbre.nodes.new("ShaderNodeValToRGB")
+    tons.color_ramp.elements[0].position = 0.15
+    tons.color_ramp.elements[0].color = (0.006, 0.006, 0.008, 1.0)
+    tons.color_ramp.elements[1].position = 0.85
+    tons.color_ramp.elements[1].color = (0.048, 0.046, 0.052, 1.0)
+    melange = arbre.nodes.new("ShaderNodeMixRGB")
+    melange.blend_type = "MULTIPLY"
+    melange.inputs["Fac"].default_value = 0.55
+    arbre.links.new(coord.outputs["Object"], cellules.inputs["Vector"])
+    arbre.links.new(coord.outputs["Object"], joints.inputs["Vector"])
+    arbre.links.new(cellules.outputs["Color"], gris.inputs["Color"])
+    arbre.links.new(gris.outputs["Val"], tons.inputs["Fac"])
+    arbre.links.new(joints.outputs["Distance"], rampe.inputs["Fac"])
+    arbre.links.new(tons.outputs["Color"], melange.inputs["Color1"])
+    arbre.links.new(rampe.outputs["Color"], melange.inputs["Color2"])
+    arbre.links.new(melange.outputs["Color"], bsdf.inputs["Base Color"])
 
 
 def main():
@@ -115,6 +142,8 @@ def main():
             nid_abeille(mat, arbre, bsdf)
         if nom == "acier":
             grain(mat, arbre, bsdf, echelle=1600.0, force=0.06)
+        if nom == "alu_brut":
+            grain(mat, arbre, bsdf, echelle=2600.0, force=0.18)
         construits[nom] = mat
 
     manquants = []
