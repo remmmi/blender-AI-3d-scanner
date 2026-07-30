@@ -37,6 +37,15 @@ PANNEAU_CONGE = 2.0
 BOUTON_FEU = dict(largeur=11.0, hauteur=13.5, z=69.3, saillie=2.0, conge=2.2)
 BOUTON_REGLAGE = dict(largeur=14.4, hauteur=6.5, z=17.0, saillie=1.0, conge=1.8)
 
+# --- chanfrein cranio-ventral -----------------------------------------------
+# Releve en P15 sur les planches p02 et p03. La face craniale ne rejoint pas la
+# face ventrale par une arete : une facette inclinee part de la face craniale a
+# l'aplomb de l'arete dorsale du biseau et descend jusqu'a mourir sur la face
+# ventrale, juste au dessus du bord cranial de l'ecran.
+
+CHANFREIN_Z_BAS = 80.0      # ou la facette rejoint la face ventrale
+CHANFREIN_Y_HAUT = 9.887    # arete dorsale du biseau, sur la face craniale
+
 # --- volet caudal -----------------------------------------------------------
 
 VOLET_LARGEUR = 16.0        # medio-lateral
@@ -98,6 +107,23 @@ def main():
     corps = bpy.data.objects.get("corps_volume")
     if corps is None:
         raise RuntimeError("corps_volume absent")
+
+    # --- chanfrein cranio-ventral, a couper avant tout le reste
+    dy = CHANFREIN_Y_HAUT
+    dz = _geom.HAUTEUR - CHANFREIN_Z_BAS
+    longueur = math.hypot(dy, dz)
+    # normale du plan, dirigee vers la matiere a retirer : ventral et cranial
+    ny, nz = -dz / longueur, dy / longueur
+    cote = 60.0
+    milieu_y = dy / 2.0
+    milieu_z = CHANFREIN_Z_BAS + dz / 2.0
+    biseau = bloc("outil_chanfrein_cranial", 0.0,
+                  milieu_y + ny * cote / 2.0,
+                  milieu_z + nz * cote / 2.0,
+                  cote, cote, cote)
+    biseau.rotation_euler = (math.asin(-ny), 0.0, 0.0)
+    outil(biseau)
+    soustraire(corps, "chanfrein_cranial", biseau)
 
     # --- logement du panneau ventral
     z_centre = PANNEAU_Z + PANNEAU_HAUTEUR / 2.0
