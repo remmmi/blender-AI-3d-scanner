@@ -18,7 +18,7 @@ import mathutils
 
 SORTIE = None             # None = blender/renders du sous-projet actif
 PREFIXE = "controle"
-VUES = ["ventrale", "dorsale", "laterale_droite", "craniale"]
+VUES = ["ventrale", "dorsale", "laterale_droite", "laterale_gauche", "craniale"]
 RESOLUTION = 1200
 ORTHOGRAPHIQUE = True
 FOCALE_MM = 50.0          # ignoree si ORTHOGRAPHIQUE

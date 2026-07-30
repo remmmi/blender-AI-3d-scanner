@@ -43,8 +43,12 @@ AXE_Y = 25.75      # l'axe de revolution passe par le milieu ventro-dorsal du co
 # suite de dômes. Listes de (rayon, z) en millimetres, du caudal vers le cranial.
 PROFILS = {
     "embase": [(11.8, 90.0), (13.1, 90.9), (13.1, 96.9), (12.8, 98.3)],
-    "cylindre_transparent": [(12.8, 98.3), (13.4, 102.5), (13.7, 108.5),
-                             (13.4, 114.5), (12.8, 118.7)],
+    # renflement franc et strictement symetrique entre haut et bas, paroi de
+    # 0.3 mm. Le verre est plus bombe que la premiere passe ne le donnait.
+    "cylindre_transparent": [(12.1, 98.3), (13.1, 101.6), (13.7, 108.5),
+                             (13.1, 115.4), (12.1, 118.7)],
+    # cylindre metallique interne, visible par transparence
+    "cheminee": [(6.4, 98.3), (6.4, 118.7)],
     "bague_air": [(12.8, 118.7), (12.05, 119.6), (12.05, 124.6), (11.35, 125.5)],
     "capuchon": [(11.35, 125.5), (11.35, 130.2), (10.2, 131.2), (8.4, 131.9)],
     "collerette": [(8.4, 131.9), (7.6, 132.2), (7.2, 132.6)],
@@ -59,8 +63,12 @@ PROFILS = {
 # Orientee vers le dorsal dans l'etat d'assemblage photographie.
 LUMIERE = dict(z=122.1, hauteur=3.0, largeur=14.0, profondeur=3.0, rayon=12.05)
 
+# Epaisseur de paroi par piece, en millimetres. Le verre est mince, 0.3 mm.
+EPAISSEURS = {"cylindre_transparent": 0.3, "cheminee": 0.6}
+EPAISSEUR_DEFAUT = 0.8
 
-def revolution(nom, profil, ferme=False):
+
+def revolution(nom, profil, ferme=False, epaisseur=None):
     old = bpy.data.objects.get(nom)
     if old:
         bpy.data.objects.remove(old, do_unlink=True)
@@ -94,7 +102,7 @@ def revolution(nom, profil, ferme=False):
     # Sans epaisseur, la piece est une nappe ouverte : toute decoupe booleenne y
     # echoue silencieusement. C'est ce qui avait fait disparaitre la lumiere d'air.
     ep = ob.modifiers.new("paroi", "SOLIDIFY")
-    ep.thickness = 0.8 * MM
+    ep.thickness = (epaisseur if epaisseur is not None else EPAISSEUR_DEFAUT) * MM
     ep.offset = -1.0
 
     for f in mesh.polygons:
@@ -139,9 +147,9 @@ def lumiere_air(cible):
 
 def main():
     reservoir = _geom.collection("reservoir")
-    for nom in ("embase", "cylindre_transparent", "bague_air",
+    for nom in ("embase", "cheminee", "cylindre_transparent", "bague_air",
                 "capuchon", "collerette"):
-        ob = revolution(nom, PROFILS[nom])
+        ob = revolution(nom, PROFILS[nom], epaisseur=EPAISSEURS.get(nom))
         _geom.ranger(ob, "reservoir")
 
     lumiere_air(bpy.data.objects["bague_air"])
@@ -149,7 +157,7 @@ def main():
     embout = revolution("embout", PROFILS["embout"])
     _geom.ranger(embout, "embout")
 
-    for nom in ("embase", "cylindre_transparent", "bague_air",
+    for nom in ("embase", "cheminee", "cylindre_transparent", "bague_air",
                 "capuchon", "collerette", "embout"):
         ob = bpy.data.objects[nom]
         print("%-22s z %.1f a %.1f mm" % (

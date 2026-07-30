@@ -38,6 +38,9 @@ MM = _geom.MM
 COUDE_CAUDAL = 18.0        # hauteur du coude caudal du chevron
 COUDE_CRANIAL = 72.0       # hauteur du coude cranial
 BANDE_LARGEUR = 18.0       # largeur de la bande longitudinale, en curviligne
+# La piece creme ne demarre pas sur l'arete du biseau : une bordure de peinture
+# rouge court entre les deux, et c'est elle qui porte le slider du flanc droit.
+BORDURE_ROUGE = 6.0
 CEINTURE_DEMI = 5.45       # demi-largeur des ceintures
 CEINTURE_CAUDALE_DORSALE = 9.0    # hauteur de la ceinture caudale au sommet dorsal
 CEINTURE_CRANIALE_DORSALE = 80.0  # hauteur de la ceinture craniale au sommet dorsal
@@ -54,7 +57,7 @@ SURPIQURE_LARGEUR = 0.6
 SURPIQURE_PROFONDEUR = 0.35
 
 REP = _geom.reperes()
-SU_BANDE_DEBUT = REP["biseau"]
+SU_BANDE_DEBUT = REP["biseau"] + BORDURE_ROUGE
 SU_BANDE_FIN = SU_BANDE_DEBUT + BANDE_LARGEUR
 SU_MILIEU_BANDE = 0.5 * (SU_BANDE_DEBUT + SU_BANDE_FIN)
 SU_SOMMET = REP["sommet"]
@@ -77,6 +80,8 @@ def region_armature(su, z):
         return True
     if su < SU_BANDE_DEBUT:
         return False
+    if su < REP["biseau"]:
+        return False
     if _dans_ceinture(su, z, COUDE_CAUDAL, CEINTURE_CAUDALE_DORSALE):
         return True
     if _dans_ceinture(su, z, COUDE_CRANIAL, CEINTURE_CRANIALE_DORSALE):
@@ -92,11 +97,14 @@ def region_skai(su, z):
     return bas <= z <= haut
 
 
+SURPIQURE_X = 7.5          # position medio-laterale des deux surpiqures
+
+
 def region_surpiqure(su, z):
-    """Deux lignes longitudinales encadrant le revêtement, au depart de l'ogive."""
+    """Deux lignes longitudinales encadrant le revetement, sur le dos."""
     if not region_skai(su, z):
         return False
-    return abs(su - (REP["flanc"] + 6.0)) <= SURPIQURE_LARGEUR / 2.0
+    return abs(abs(_geom.x_de_su(su)) - SURPIQURE_X) <= SURPIQURE_LARGEUR / 2.0
 
 
 def corps():

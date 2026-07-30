@@ -183,8 +183,18 @@ def su_de_y(y, x):
     return meilleur
 
 
+def x_de_su(su):
+    """Abscisse medio-laterale du point de la section a l'abscisse curviligne su."""
+    for i in range(len(ABSCISSES) - 1):
+        if ABSCISSES[i] <= su <= ABSCISSES[i + 1]:
+            portee = ABSCISSES[i + 1] - ABSCISSES[i]
+            t = 0.0 if portee <= 0 else (su - ABSCISSES[i]) / portee
+            return DEMI[i][0] + t * (DEMI[i + 1][0] - DEMI[i][0])
+    return DEMI[-1][0] if su > ABSCISSES[-1] else DEMI[0][0]
+
+
 def nappe(nom, region, decalage=0.0, epaisseur=1.5, vers_exterieur=True,
-          pas_z=0.5, lisse=True):
+          pas_z=0.5, lisse=True, cotes=(1, -1)):
     """Construit une nappe epousant le flanc, restreinte a region(su, z).
 
     region  fonction (su, z) -> bool, su etant l'abscisse symetrique
@@ -199,7 +209,6 @@ def nappe(nom, region, decalage=0.0, epaisseur=1.5, vers_exterieur=True,
     zs = [i * HAUTEUR / (nz - 1) for i in range(nz)]
 
     # demi-section a droite puis symetrique a gauche, avec su commun
-    cotes = [1, -1]
     bm = bmesh.new()
     total = 0
 
