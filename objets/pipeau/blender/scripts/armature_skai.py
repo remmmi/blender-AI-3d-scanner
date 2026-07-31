@@ -66,8 +66,13 @@ PROFIL_ARETE = 0.5
 # Les bords de la piece ne s'arretent pas au ras de la surface du corps : ils la
 # depassent legerement vers l'interieur. Deux surfaces exactement coplanaires se
 # disputent l'affichage et produisent un moucheté. Ce debord les separe.
-DEBORD = 0.35
-DEBORD_ENFOUI = 0.45       # profondeur atteinte par le bord, sous la surface
+DEBORD = 0.5
+DEBORD_ENFOUI = 0.8        # profondeur atteinte par le bord, sous la surface
+# Le skai et son logement passent SOUS la piece creme au lieu de s'arreter a son
+# bord : sinon la paroi du logement et la tranche de la piece restent visibles,
+# et se lisent comme une bordure claire et une bande rouge parasites.
+RECOUVREMENT = 1.2
+JEU_SKAI = 0.02            # le panneau affleure le corps, sans le traverser
 DEPRESSION_SKAI = 0.5      # enfoncement de la surface du skai
 PROFONDEUR_ENTAILLE = 1.0  # profondeur de la decoupe recevant le skai
 
@@ -111,10 +116,12 @@ def region_armature(su, z):
 
 
 def region_skai(su, z):
-    if su <= SU_BANDE_FIN:
+    if su <= SU_BANDE_FIN - RECOUVREMENT:
         return False
-    bas = _hauteur_ceinture(su, COUDE_CAUDAL, -1.0) + CEINTURE_DEMI
-    haut = _hauteur_ceinture(su, COUDE_CRANIAL, +1.0) - CEINTURE_DEMI
+    bas = (_hauteur_ceinture(su, COUDE_CAUDAL, -1.0)
+           + CEINTURE_DEMI - RECOUVREMENT)
+    haut = (_hauteur_ceinture(su, COUDE_CRANIAL, +1.0)
+            - CEINTURE_DEMI + RECOUVREMENT)
     return bas <= z <= haut
 
 
@@ -153,22 +160,31 @@ def _rampe_chanfrein(d):
 
 
 def hauteur_armature(su, z):
-    """Profil en travers de la piece creme, en millimetres au dessus du pourtour."""
+    """Profil en travers de la piece creme, en millimetres au dessus du pourtour.
+
+    Chaque ceinture presente, du bord tourne vers le skai vers le bord tourne
+    vers l'extremite : 1 mm de chanfrein arrondi, 4 mm de plan, 3 mm de biseau
+    plan. Les deux ceintures sont en miroir. La bande longitudinale qui les
+    relie sur le flanc est pleine, et ne porte de chanfrein que sur son bord
+    dorsal, celui qui longe le skai.
+    """
     bas = _hauteur_ceinture(su, COUDE_CAUDAL, -1.0)
     haut = _hauteur_ceinture(su, COUDE_CRANIAL, +1.0)
 
-    # bords tournes vers les extremites : biseau plan de 3 mm
+    # bords tournes vers les extremites craniale et caudale : biseau de 3 mm
     facteur = min(_rampe_biseau((haut + CEINTURE_DEMI) - z),
                   _rampe_biseau(z - (bas - CEINTURE_DEMI)))
 
-    # bords tournes vers le skai : chanfrein arrondi de 1 mm
     if su > SU_BANDE_FIN:
+        # au dela de la bande, le point appartient a l'une des deux ceintures.
+        # Le chanfrein se mesure vers l'interieur de SA ceinture, pas vers
+        # l'autre : mesure a l'envers, il creusait une gouttiere au milieu de
+        # la piece.
         facteur = min(facteur,
-                      _rampe_chanfrein((haut - CEINTURE_DEMI) - z)
-                      if z < haut else 1.0,
-                      _rampe_chanfrein(z - (bas + CEINTURE_DEMI))
-                      if z > bas else 1.0)
+                      max(_rampe_chanfrein(z - (haut - CEINTURE_DEMI)),
+                          _rampe_chanfrein((bas + CEINTURE_DEMI) - z)))
     else:
+        # bande longitudinale : chanfrein sur son seul bord dorsal
         facteur = min(facteur, _rampe_chanfrein(SU_BANDE_FIN - su))
 
     return SAILLIE_ARMATURE * facteur
@@ -182,19 +198,39 @@ def corps():
 
 
 def _bornes_skai():
-    bas = lambda su: _hauteur_ceinture(su, COUDE_CAUDAL, -1.0) + CEINTURE_DEMI
-    haut = lambda su: _hauteur_ceinture(su, COUDE_CRANIAL, +1.0) - CEINTURE_DEMI
+    bas = lambda su: (_hauteur_ceinture(su, COUDE_CAUDAL, -1.0)
+                      + CEINTURE_DEMI - RECOUVREMENT)
+    haut = lambda su: (_hauteur_ceinture(su, COUDE_CRANIAL, +1.0)
+                       - CEINTURE_DEMI + RECOUVREMENT)
     return bas, haut
 
 
 def entailler_skai():
-    """Creuse le logement du skai dans le corps."""
+    """Retire l'ancien logement creuse dans le corps.
+
+    Le skai n'est plus loge dans une entaille : la paroi de cette entaille restait
+    visible entre la ceinture et le panneau, et se lisait comme une bordure claire
+    parasite. Le panneau est desormais pose sur le corps, son bord passant sous le
+    conge de la ceinture. Cela supprime au passage la decoupe booleenne la plus
+    lourde de la scene.
+    """
+    corps_ob = corps()
+    for m in list(corps_ob.modifiers):
+        if m.name == "entaille_skai":
+            corps_ob.modifiers.remove(m)
+    ancien = bpy.data.objects.get("outil_entaille_skai")
+    if ancien:
+        bpy.data.objects.remove(ancien, do_unlink=True)
+    return None
+
+
+def _entailler_skai_obsolete():
     # L'outil est bati depuis sa face exterieure et epaissi vers l'interieur,
     # meme convention que les pieces visibles. Construit en sens inverse, il
     # produisait un solide retourne qui vidait entierement le corps.
     bas, haut = _bornes_skai()
     outil = _geom.bande(
-        "outil_entaille_skai", SU_BANDE_FIN, SU_SOMMET, bas, haut,
+        "outil_entaille_skai", SU_BANDE_FIN - RECOUVREMENT, SU_SOMMET, bas, haut,
         lambda su, z: 3.0,
         epaisseur=PROFONDEUR_ENTAILLE + 3.0, pas_su=0.25, divisions=64,
         lisse=False,
@@ -239,13 +275,13 @@ def main():
                          epaisseur=2.5, pas_su=0.25, divisions=div)
         _geom.ranger(ob, "corps")
 
-    outil = entailler_skai()
+    entailler_skai()
 
     bas_s, haut_s = _bornes_skai()
     skai = _geom.bande(
-        "skai", SU_BANDE_FIN, SU_SOMMET, bas_s, haut_s,
-        lambda su, z: -DEPRESSION_SKAI,
-        epaisseur=0.5, pas_su=0.25, divisions=64,
+        "skai", SU_BANDE_FIN - RECOUVREMENT, SU_SOMMET, bas_s, haut_s,
+        lambda su, z: JEU_SKAI,
+        epaisseur=0.6, pas_su=0.25, divisions=64,
     )
     _geom.ranger(skai, "corps")
 
@@ -262,7 +298,7 @@ def main():
 
     print("reperes curvilignes:", {k: round(v, 2) for k, v in REP.items()})
     print("bande longitudinale: su %.2f a %.2f" % (SU_BANDE_DEBUT, SU_BANDE_FIN))
-    print("outil booleen:", outil.name)
+    print("skai pose sur le corps, aucune decoupe booleenne")
 
 
 main()
