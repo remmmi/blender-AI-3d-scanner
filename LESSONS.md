@@ -43,6 +43,11 @@ Capitalisation continue (P18). Une lecon = un fait verifie + ce qu'on en fait.
   et se disputent l'affichage : le resultat est un mouchete rouge et blanc, pris
   a tort pour un defaut de forme. Faire deborder le bord de quelques dixiemes de
   millimetre pour qu'il s'enfouisse sous la surface.
+- **Toute fonction de profil doit etre bornee.** Une rampe qui rend une valeur
+  proportionnelle a la distance depasse tres vite les cotes de l'objet des qu'on
+  l'evalue hors de son domaine. Une piece de 1.5 mm de saillie est partie a 31 mm
+  du plan sagittal, formant une excroissance triangulaire prise a tort pour une
+  piece parasite. Borner la sortie, pas seulement l'entree.
 - **Ne jamais ecrire de valeur physique de memoire.** Les puissances d'eclairage
   posees d'intuition etaient fausses d'un facteur proche de 50. Une source suit
   le carre de sa distance : toute valeur trouvee ailleurs doit etre rapportee a

@@ -187,6 +187,12 @@ def hauteur_armature(su, z):
         # bande longitudinale : chanfrein sur son seul bord dorsal
         facteur = min(facteur, _rampe_chanfrein(SU_BANDE_FIN - su))
 
+    # Bornage indispensable : hors de sa propre ceinture, un conge renvoie une
+    # valeur proportionnelle a la distance, qui atteint plusieurs dizaines de
+    # millimetres au milieu de la piece. Sans cette borne, la nappe partait a
+    # 31 mm du plan sagittal au lieu de 12.
+    plancher = -DEBORD_ENFOUI / SAILLIE_ARMATURE
+    facteur = min(1.0, max(plancher, facteur))
     return SAILLIE_ARMATURE * facteur
 
 

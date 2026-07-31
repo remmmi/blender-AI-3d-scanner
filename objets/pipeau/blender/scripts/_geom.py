@@ -266,6 +266,8 @@ def nappe(nom, region, decalage=0.0, epaisseur=1.5, vers_exterieur=True,
     m = ob.modifiers.new("epaisseur", "SOLIDIFY")
     m.thickness = epaisseur * MM
     m.offset = 1.0 if vers_exterieur else -1.0
+    m.use_even_offset = False
+    m.use_quality_normals = True
 
     if lisse:
         for f in mesh.polygons:
@@ -331,6 +333,11 @@ def bande(nom, su_min, su_max, z_bas, z_haut, hauteur, epaisseur=2.5,
     # les outils de decoupe, qui doivent depasser de la surface
     m.thickness = abs(epaisseur) * MM
     m.offset = 1.0 if epaisseur < 0 else -1.0
+    # L'epaisseur constante divise par le cosinus de l'angle aux aretes : sur un
+    # conge raide elle projette les sommets tres loin. Elle a fait sortir une
+    # piece a 33 mm du plan sagittal au lieu de 12.
+    m.use_even_offset = False
+    m.use_quality_normals = True
     if lisse:
         for f in mesh.polygons:
             f.use_smooth = True
