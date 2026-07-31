@@ -75,3 +75,303 @@ Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_latera
 Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_craniale.png'
  Time: 00:07.04 (Saving: 00:00.20)
 
+Server thread started
+BlenderMCP server started on localhost:9876
+BlenderMCP addon registered
+Connected to client: ('127.0.0.1', 43938)
+Client handler started
+Executing handler for get_scene_info
+Getting scene info...
+Scene info collected: 10 objects
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 43940)
+Client handler started
+Executing handler for get_scene_info
+Getting scene info...
+Scene info collected: 10 objects
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 34194)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 34200)
+Client handler started
+Executing handler for get_viewport_screenshot
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 52076)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 58352)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 58368)
+Client handler started
+Executing handler for get_viewport_screenshot
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 42648)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 42658)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 49760)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 49770)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 37574)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 56498)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 56504)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 56512)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 56522)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 51312)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 51328)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 51338)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 51354)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 51360)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 35716)
+Client handler started
+Executing handler for execute_code
+Error in handler: Code execution error: min() arg is an empty sequence
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 50024)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 38342)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 41754)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 59836)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 41944)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 41950)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 45592)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 45604)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 45610)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 45622)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 45636)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 34948)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 49462)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 58896)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 41826)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 50976)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 50990)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 50994)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 51008)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 51014)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 51018)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 60520)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 52600)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 51552)
+Client handler started
+Executing handler for execute_code
+Handler execution complete
+Client disconnected
+Client handler stopped
+Connected to client: ('127.0.0.1', 51562)
+Client handler started
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_ventrale.png'
+ Time: 00:05.22 (Saving: 00:00.17)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_dorsale.png'
+ Time: 00:06.64 (Saving: 00:00.17)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_laterale_droite.png'
+ Time: 00:07.72 (Saving: 00:00.17)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_laterale_gauche.png'
+ Time: 00:07.51 (Saving: 00:00.20)
+
+Saved: '/home/m/projet/blender/objets/pipeau/blender/renders/controle_vue_craniale.png'
+ Time: 00:08.21 (Saving: 00:00.19)
+

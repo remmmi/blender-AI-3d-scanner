@@ -63,6 +63,11 @@ PROFIL_CHANFREIN = 1.0     # cote skai, arrondi
 PROFIL_PLAN = 4.0
 PROFIL_BISEAU = 3.0        # cote extremite, plan
 PROFIL_ARETE = 0.5
+# Les bords de la piece ne s'arretent pas au ras de la surface du corps : ils la
+# depassent legerement vers l'interieur. Deux surfaces exactement coplanaires se
+# disputent l'affichage et produisent un moucheté. Ce debord les separe.
+DEBORD = 0.35
+DEBORD_ENFOUI = 0.45       # profondeur atteinte par le bord, sous la surface
 DEPRESSION_SKAI = 0.5      # enfoncement de la surface du skai
 PROFONDEUR_ENTAILLE = 1.0  # profondeur de la decoupe recevant le skai
 
@@ -126,7 +131,7 @@ def region_surpiqure(su, z):
 def _rampe_biseau(d):
     """Biseau plan de 3 mm, arete adoucie sur les 0.5 derniers millimetres."""
     if d <= 0.0:
-        return 0.0
+        return d * DEBORD_ENFOUI / (DEBORD * SAILLIE_ARMATURE)
     if d >= PROFIL_BISEAU:
         return 1.0
     v = d / PROFIL_BISEAU
@@ -140,7 +145,7 @@ def _rampe_biseau(d):
 def _rampe_chanfrein(d):
     """Conge arrondi de 1 mm, cote skai."""
     if d <= 0.0:
-        return 0.0
+        return d * DEBORD_ENFOUI / (DEBORD * SAILLIE_ARMATURE)
     if d >= PROFIL_CHANFREIN:
         return 1.0
     u = d / PROFIL_CHANFREIN
@@ -149,8 +154,6 @@ def _rampe_chanfrein(d):
 
 def hauteur_armature(su, z):
     """Profil en travers de la piece creme, en millimetres au dessus du pourtour."""
-    if not region_armature(su, z):
-        return 0.0
     bas = _hauteur_ceinture(su, COUDE_CAUDAL, -1.0)
     haut = _hauteur_ceinture(su, COUDE_CRANIAL, +1.0)
 
@@ -218,13 +221,18 @@ def main():
     bas = lambda su: _hauteur_ceinture(su, COUDE_CAUDAL, -1.0)
     haut = lambda su: _hauteur_ceinture(su, COUDE_CRANIAL, +1.0)
 
+    # chaque morceau deborde de DEBORD au dela de son bord nominal, pour que le
+    # bord vienne s'enfouir sous la surface du corps au lieu de s'y poser
     morceaux = [
-        ("armature_bande", SU_BANDE_DEBUT, SU_BANDE_FIN,
-         lambda su: bas(su) - marge, lambda su: haut(su) + marge, 48),
+        ("armature_bande", SU_BANDE_DEBUT, SU_BANDE_FIN + DEBORD,
+         lambda su: bas(su) - marge - DEBORD,
+         lambda su: haut(su) + marge + DEBORD, 56),
         ("armature_ceinture_caudale", SU_BANDE_FIN, SU_SOMMET,
-         lambda su: bas(su) - marge, lambda su: bas(su) + marge, 24),
+         lambda su: bas(su) - marge - DEBORD,
+         lambda su: bas(su) + marge + DEBORD, 28),
         ("armature_ceinture_craniale", SU_BANDE_FIN, SU_SOMMET,
-         lambda su: haut(su) - marge, lambda su: haut(su) + marge, 24),
+         lambda su: haut(su) - marge - DEBORD,
+         lambda su: haut(su) + marge + DEBORD, 28),
     ]
     for nom, su0, su1, zb, zh, div in morceaux:
         ob = _geom.bande(nom, su0, su1, zb, zh, hauteur_armature,

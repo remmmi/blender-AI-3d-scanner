@@ -38,6 +38,11 @@ Capitalisation continue (P18). Une lecon = un fait verifie + ce qu'on en fait.
   l'interieur.** Construite en sens inverse, la piece produit un solide retourne.
   Une decoupe booleenne avec un tel solide ne leve aucune erreur : elle vide
   entierement l'objet cible.
+- **Un bord de piece rapportee ne doit jamais mourir au ras de la surface qui la
+  porte.** Les deux surfaces deviennent coplanaires sur toute la longueur du bord
+  et se disputent l'affichage : le resultat est un mouchete rouge et blanc, pris
+  a tort pour un defaut de forme. Faire deborder le bord de quelques dixiemes de
+  millimetre pour qu'il s'enfouisse sous la surface.
 - **Ne jamais ecrire de valeur physique de memoire.** Les puissances d'eclairage
   posees d'intuition etaient fausses d'un facteur proche de 50. Une source suit
   le carre de sa distance : toute valeur trouvee ailleurs doit etre rapportee a
